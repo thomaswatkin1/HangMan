@@ -60,9 +60,34 @@ namespace HangMan
             // (Initialise word status function goes here)
         }
 
-        static void DisplayGallows() // Displays gallows
+        static void DisplayGallows(int wrongs) // Displays gallows
         {
-            // (Gallows function goes here)
+            switch (wrongs)
+            {
+                case 0:
+                    return "";
+                case 1:
+                    return "\n\n\n\n\n\n\n_____";
+                case 2:
+                    return "\n|\n|\n|\n|\n|\n|\n_____";
+                case 3:
+                    return "_______\n|\n|\n|\n|\n|\n|\n|_____";
+                case 4:
+                    return "_______\n|/\n|\n|\n|\n|\n|\n|_____";
+                case 5:
+                    return "_______\n|/   |\n|\n|\n|\n|\n|\n|_____";
+                case 6:
+                    return "_______\n|/   |\n|    O\n|\n|\n|\n|\n|_____";
+                case 7:
+                    return "_______\n|/   |\n|    O\n|    |\r\n|    |\n|\n|\n|_____";
+                case 8:
+                    return "_______\n|/   |\n|    O\n|  \\ | /\n|    |\n|\n|\n|_____";
+                case 9:
+                    return "_______\n|/   |\n|    O\n|  \\ | /\n|    |\n|   / \\\n|\n|_____";
+                default:
+                    return "";
+
+            }
         }
 
         static void UpdateGuessedWord(char guess) // Updates word status
