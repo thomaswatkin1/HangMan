@@ -1,66 +1,86 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 
 namespace HangMan
 
 {
     class Program
     {
-        public static string WordsFilePath = "words.txt"; // Path for words file
-        public static string[] words; // Array to store words from file
-        public static string word; // The word to be guessed
-        public static char[] status; // Current state of guessed word
-        public static int remainingAttempts = 6; // Number of remaining attempts
-        public static bool gameWon = false; // Tracks if game has been won
-        
+        private static string WordsFilePath = "words.txt"; // Path for words file
+        private static string[] words; // Array to store words from file
+        private static string secretWord; // The word to be guessed
+        private static char[] status; // Current state of guessed word
+        private static int remainingAttempts = 9; // Number of remaining attempts
+        private static bool gameWon; // Tracks if game has been won
+        private static int wrongs = 0; // Number of wrong guesses
+
         public static void Main(string[] args)
         {
             LoadWords();
             SelectWord();
             InitialiseWordStatus();
-            
+
             Console.WriteLine("Welcome to Hangman.");
 
-            while (remainingAttempts > 0 && !gameWon) // Main game - calls game functions
+            while (remainingAttempts > 0 && !gameWon) // MAIN GAME - calls game functions
             {
-                DisplayGallows();
-                DisplayStatus();
-                CheckGuess();
-  
+                Console.WriteLine(DisplayGallows(wrongs)); // Displays gallows
+                DisplayStatus(); // Displays current word guess
+                char guess = GetUserGuess(); // Takes guess
+                
+                if (secretWord.Contains(guess)) // Checks guess
+                {
+                    UpdateStatus(guess);
+                    if (status.SequenceEqual(secretWord))
+                    {
+                        gameWon = true;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Not in the word.");
+                    remainingAttempts--;
+                    wrongs++;
+                }
+
             }
-            
+
             // Displays Final result
-            
-            Console.Clear();
-            DisplayGallows();
+
+            Console.WriteLine(DisplayGallows(wrongs));
             if (gameWon)
             {
-                Console.WriteLine("You won! Congratulations.");
+                Console.WriteLine("You won! The word was '"+ secretWord +". Congratulations.");
             }
             else
             {
-                Console.WriteLine("You ran out of attempts. The word was '"+word+"'.");
+                Console.WriteLine("You ran out of attempts. The word was '" + secretWord + "'.");
             }
-            
+
         }
 
-        public static void LoadWords() // Loads words from file
+        private static void LoadWords() // Loads words from file
         {
             words = File.ReadAllLines(WordsFilePath);
         }
-
         
-        public static void SelectWord() // Selects random word
+        private static void SelectWord() // Selects random word (NEEDS UPDATING)
         {
-            // (Word selector function goes here)
+            Random random = new Random();
+            secretWord = words[random.Next(words.Length)].ToUpper(); // Convert to uppercase for case-insensitive comparison
         }
 
-        static void InitialiseWordStatus() // Makes the status of the word, i.e. '___' 
+        private static void InitialiseWordStatus() // Makes the status of the word, i.e. '___' 
         {
-            // (Initialise word status function goes here)
+            status = new char[secretWord.Length];
+            for (int i = 0; i < secretWord.Length; i++)
+            {
+                status[i] = '_';
+            }
         }
 
-        static void DisplayGallows(int wrongs) // Displays gallows
+        private static string DisplayGallows(int wrongs) // Displays gallows
         {
             switch (wrongs)
             {
@@ -90,23 +110,44 @@ namespace HangMan
             }
         }
 
-        static void UpdateGuessedWord(char guess) // Updates word status
+        private static void UpdateStatus(char guess) // Updates word status
         {
-            // (Word status update function goes here)
+            for (int i = 0; i < secretWord.Length; i++)
+            {
+                if (secretWord[i] == guess)
+                {
+                    status[i] = guess;
+                }
+            }
         }
 
-        static void DisplayStatus() // Displays word status
+        private static void DisplayStatus() // Displays word status
         {
-            // (Word status display function goes here)
+            Console.WriteLine("Word to guess: " + new string(status));
+            Console.WriteLine("Remaining Attempts: " + remainingAttempts);
         }
 
-        static void GetUserGuess() // Gets guess from user
+        private static char GetUserGuess() // Gets guess from user
         {
-            // (Get user guess function goes here)
-        }
-        static void CheckGuess() // Checks guess
-        {
-            // (Guess check function goes here)
+            char guess = '\0';
+            bool validInput = false;
+
+            do
+            {
+                Console.Write("Guess a letter: ");
+                string input = Console.ReadLine();
+
+                if (input != null && input.Length == 1 && char.TryParse(input.ToUpper(), out guess))
+                {
+                    validInput = true;
+                }
+                else
+                {
+                    Console.WriteLine("Invalid input. Please enter a single letter.");
+                }
+            } while (!validInput);
+
+            return guess;
         }
     }
 }
