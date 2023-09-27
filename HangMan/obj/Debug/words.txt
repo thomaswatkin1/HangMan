@@ -141,7 +141,6 @@ cotton
 cough
 country
 cover
-cow
 crack
 credit
 crime
@@ -420,7 +419,6 @@ nose
 note
 number
 observation
-off
 offer
 office
 only
